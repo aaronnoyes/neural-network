@@ -7,7 +7,7 @@ import pdb
 import matplotlib.pyplot as plt
 
 class NeuralNetwork:
-    def __init__(self, x, y, activation='sigmoid', errorFunction='mse'):
+    def __init__(self, x, y, activation='sigmoid', errorFunction='mse', learningRate=0.01):
         self.input      = x
         self.weights1   = np.random.rand(self.input.shape[1],4)
         self.weights2   = np.random.rand(4,1)
@@ -16,6 +16,7 @@ class NeuralNetwork:
         self.activation = activation
         self.errorFunction = errorFunction
         self.history = []
+        self.learningRate = learningRate
 
     def sigmoid(self, x, derivative=False):
         if derivative:
@@ -41,7 +42,7 @@ class NeuralNetwork:
 
         if (self.activation == 'relu'):
             self.layer1 = self.relu(np.dot(self.input, self.weights1))
-            self.output = self.relu(np.dot(self.layer1, self.weights2))
+            self.output = self.sigmoid(np.dot(self.layer1, self.weights2))
 
         return self.output
 
@@ -51,13 +52,14 @@ class NeuralNetwork:
             d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.sigmoid(self.output, True)))
             d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.sigmoid(self.output, True), self.weights2.T) * self.sigmoid(self.layer1, True)))
 
+        
         if (self.activation == 'relu'):
-            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.relu(self.output, True)))
+            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.sigmoid(self.output, True)))
             d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.relu(self.output, True), self.weights2.T) * self.relu(self.layer1, True)))
 
         # update the weights with the derivative (slope) of the loss function
-        self.weights1 += d_weights1
-        self.weights2 += d_weights2
+        self.weights1 += self.learningRate * d_weights1
+        self.weights2 += self.learningRate * d_weights2
 
     def train(self):
         self.output = self.feedforward()
@@ -69,21 +71,28 @@ class NeuralNetwork:
             self.train()
 
     def summary(self):
-        plt.plot(self.history)
+        plt.plot(self.history, label=self.activation)
         plt.xlabel('trials')
         plt.ylabel('mean squared error')
+        plt.legend()
+        print (self.activation)
         print ("Input : \n" + str(self.input))
         print ("Actual Output : \n" + str(self.y))
         print ("Predicted Output: \n" + str(self.feedforward()))
-        plt.show()
+        print ("\n")
+        # plt.show()
 
 def main():
     np.set_printoptions(formatter={'float': '{: 0.5f}'.format}) #show trailing 0s and always 5 points of precision for comparison
     x = np.array(([0,0,1],[0,1,1],[1,0,1],[1,1,1]), dtype=float)
     y = np.array(([0],[1],[1],[0]), dtype=float)
     # nn = NeuralNetwork(x, y)
-    NN = NeuralNetwork(x,y, 'sigmoid')
+    NN = NeuralNetwork(x,y, activation='sigmoid', learningRate=1)
     NN.learn()
     NN.summary()
+    NN2 = NeuralNetwork(x,y, activation='relu', learningRate=0.01)
+    NN2.learn()
+    NN2.summary()
+    plt.show()
 
 main()
