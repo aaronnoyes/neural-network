@@ -47,9 +47,14 @@ def main():
     networks.append(NN)
 
     #relu network
-    NN2 = NeuralNetwork(x,y, activation='relu', learningRate=0.01)
+    NN2 = NeuralNetwork(x,y, activation='relu', learningRate=0.1)
     NN2.learn()
     networks.append(NN2)
+
+    #relu network
+    NN3 = NeuralNetwork(x,y, activation='tanh', learningRate=0.1)
+    NN3.learn()
+    networks.append(NN3)
 
     compareNetworks(networks)
 

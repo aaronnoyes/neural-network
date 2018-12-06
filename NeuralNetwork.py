@@ -5,7 +5,7 @@
 import numpy as np
 
 class NeuralNetwork:
-    def __init__(self, x, y, activation='sigmoid', errorFunction='mse', learningRate=0.01, goalError=0.002, trialLimit=3000):
+    def __init__(self, x, y, activation='sigmoid', errorFunction='mse', learningRate=0.01, goalError=0.002, trialLimit=10000):
         self.input      = x
         self.weights1   = np.random.rand(self.input.shape[1],4)
         self.weights2   = np.random.rand(4,1)
@@ -19,17 +19,23 @@ class NeuralNetwork:
         self.goalError = goalError
         self.trialLimit = trialLimit
 
-    def sigmoid(self, x, derivative=False):
-        if derivative:
-            return x*(1-x)
-        else:
-            return 1 / (1 + np.exp(-x))
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
 
-    def relu(self, x, derivative=False):
-        if derivative:
-            return 1. * (x > 0)
-        else:
-            return x * (x > 0)
+    def d_sigmoid(self, x):
+        return x*(1-x)
+
+    def relu(self, x):
+        return x * (x > 0)
+
+    def d_relu(self, x):
+        return 1. * (x > 0)
+
+    def tanh(self, x):
+        return np.tanh(x)
+
+    def d_tanh(self, x):
+        return (1 - (x ** 2))
 
     #calculate the mean squared error elementwise
     #axis None performs this element wise returning a scalar value
@@ -45,18 +51,26 @@ class NeuralNetwork:
             self.layer1 = self.relu(np.dot(self.input, self.weights1))
             self.output = self.sigmoid(np.dot(self.layer1, self.weights2))
 
+        if (self.activation == 'tanh'):
+            self.layer1 = self.tanh(np.dot(self.input, self.weights1))
+            self.output = self.sigmoid(np.dot(self.layer1, self.weights2))
+
         return self.output
 
     def backprop(self):
         # application of the chain rule to find derivative of the loss function with respect to weights2 and weights1
         if (self.activation == 'sigmoid'):
-            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.sigmoid(self.output, True)))
-            d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.sigmoid(self.output, True), self.weights2.T) * self.sigmoid(self.layer1, True)))
+            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.d_sigmoid(self.output)))
+            d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.d_sigmoid(self.output), self.weights2.T) * self.d_sigmoid(self.layer1)))
 
 
         if (self.activation == 'relu'):
-            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.sigmoid(self.output, True)))
-            d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.relu(self.output, True), self.weights2.T) * self.relu(self.layer1, True)))
+            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.d_sigmoid(self.output)))
+            d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.d_relu(self.output), self.weights2.T) * self.d_relu(self.layer1)))
+
+        if (self.activation == 'tanh'):
+            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.d_sigmoid(self.output)))
+            d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.d_tanh(self.output), self.weights2.T) * self.d_tanh(self.layer1)))
 
         # update the weights with the derivative (slope) of the loss function
         self.weights1 += self.learningRate * d_weights1
