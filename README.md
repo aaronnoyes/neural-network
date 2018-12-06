@@ -1,1 +1,1 @@
-#A Simple Neural Network in Python
+#A Simple Neural Network comparison in Python
