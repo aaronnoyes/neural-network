@@ -24,10 +24,12 @@ def compareNetworks(networks):
 
     #bar chart for activation trials required
     plt.subplot(212)
-    plt.ylabel('trials required')
-    plt.xlabel('activation function')
-    plt.bar(np.arange(len(networks)), trials, align='center', color=plotColors)
-    plt.xticks(np.arange(len(networks)), activations)
+    plt.xlabel('trials required')
+    plt.ylabel('activation function')
+    plt.barh(np.arange(len(networks)), trials, align='center', color=plotColors)
+    plt.yticks(np.arange(len(networks)), activations)
+    for i, v in enumerate(trials):
+        plt.text(v*.5, i, str(v), color='black')
 
     #clean up spacing between subplots
     plt.tight_layout()

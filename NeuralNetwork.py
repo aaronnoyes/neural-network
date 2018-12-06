@@ -5,7 +5,7 @@
 import numpy as np
 
 class NeuralNetwork:
-    def __init__(self, x, y, activation='sigmoid', errorFunction='mse', learningRate=0.01, goalError=0.002, trialLimit=10000):
+    def __init__(self, x, y, activation='sigmoid', errorFunction='mse', learningRate=0.01, goalError=0.002, trialLimit=5000):
         self.input      = x
         self.weights1   = np.random.rand(self.input.shape[1],4)
         self.weights2   = np.random.rand(4,1)
@@ -29,7 +29,7 @@ class NeuralNetwork:
         return x * (x > 0)
 
     def d_relu(self, x):
-        return 1. * (x > 0)
+        return 1 * (x > 0)
 
     def tanh(self, x):
         return np.tanh(x)
