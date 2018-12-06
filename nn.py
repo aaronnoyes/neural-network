@@ -17,6 +17,7 @@ class NeuralNetwork:
         self.errorFunction = errorFunction
         self.history = []
         self.learningRate = learningRate
+        self.trials = 0
 
     def sigmoid(self, x, derivative=False):
         if derivative:
@@ -52,7 +53,7 @@ class NeuralNetwork:
             d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.sigmoid(self.output, True)))
             d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.sigmoid(self.output, True), self.weights2.T) * self.sigmoid(self.layer1, True)))
 
-        
+
         if (self.activation == 'relu'):
             d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.sigmoid(self.output, True)))
             d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.relu(self.output, True), self.weights2.T) * self.relu(self.layer1, True)))
@@ -67,8 +68,14 @@ class NeuralNetwork:
         self.backprop()
 
     def learn(self):
-        for i in range(1500):
+        # for i in range(3000):
+        #     self.train()
+        while self.calculateError() > 0.002:
+            self.trials += 1
             self.train()
+            if self.trials > 3000:
+                print("Timed out at 3000 trials")
+                break
 
     def summary(self):
         plt.plot(self.history, label=self.activation)
@@ -79,6 +86,8 @@ class NeuralNetwork:
         print ("Input : \n" + str(self.input))
         print ("Actual Output : \n" + str(self.y))
         print ("Predicted Output: \n" + str(self.feedforward()))
+        print ("Mean Squared Error: " + str(self.calculateError()))
+        print ("Trials Required: " + str(self.trials))
         print ("\n")
         # plt.show()
 
