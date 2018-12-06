@@ -1,0 +1,86 @@
+#based on neural network described by jamesloyys
+#https://gist.github.com/jamesloyys/ff7a7bb1540384f709856f9cdcdee70d#file-neural_network_backprop-py
+#https://towardsdatascience.com/how-to-build-your-own-neural-network-from-scratch-in-python-68998a08e4f6
+
+import numpy as np
+
+class NeuralNetwork:
+    def __init__(self, x, y, activation='sigmoid', errorFunction='mse', learningRate=0.01, goalError=0.002, trialLimit=3000):
+        self.input      = x
+        self.weights1   = np.random.rand(self.input.shape[1],4)
+        self.weights2   = np.random.rand(4,1)
+        self.y          = y
+        self.output     = np.zeros(self.y.shape)
+        self.activation = activation
+        self.errorFunction = errorFunction
+        self.history = []
+        self.learningRate = learningRate
+        self.trials = 0
+        self.goalError = goalError
+        self.trialLimit = trialLimit
+
+    def sigmoid(self, x, derivative=False):
+        if derivative:
+            return x*(1-x)
+        else:
+            return 1 / (1 + np.exp(-x))
+
+    def relu(self, x, derivative=False):
+        if derivative:
+            return 1. * (x > 0)
+        else:
+            return x * (x > 0)
+
+    #calculate the mean squared error elementwise
+    #axis None performs this element wise returning a scalar value
+    def calculateError(self):
+        return ((self.y - self.output)**2).mean(axis=None)
+
+    def feedforward(self):
+        if (self.activation == 'sigmoid'):
+            self.layer1 = self.sigmoid(np.dot(self.input, self.weights1))
+            self.output = self.sigmoid(np.dot(self.layer1, self.weights2))
+
+        if (self.activation == 'relu'):
+            self.layer1 = self.relu(np.dot(self.input, self.weights1))
+            self.output = self.sigmoid(np.dot(self.layer1, self.weights2))
+
+        return self.output
+
+    def backprop(self):
+        # application of the chain rule to find derivative of the loss function with respect to weights2 and weights1
+        if (self.activation == 'sigmoid'):
+            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.sigmoid(self.output, True)))
+            d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.sigmoid(self.output, True), self.weights2.T) * self.sigmoid(self.layer1, True)))
+
+
+        if (self.activation == 'relu'):
+            d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.sigmoid(self.output, True)))
+            d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.relu(self.output, True), self.weights2.T) * self.relu(self.layer1, True)))
+
+        # update the weights with the derivative (slope) of the loss function
+        self.weights1 += self.learningRate * d_weights1
+        self.weights2 += self.learningRate * d_weights2
+
+    def train(self):
+        self.output = self.feedforward()
+        self.history.append(self.calculateError())
+        self.backprop()
+
+    def learn(self):
+        while self.calculateError() > self.goalError:
+            self.trials += 1
+            self.train()
+            if self.trials > self.trialLimit:
+                print(self.activation + " timed out after " + str(self.trialLimit) + " trials\n")
+                break
+
+    def summary(self):
+
+        print (self.activation)
+        print ("Input : \n" + str(self.input))
+        print ("Actual Output : \n" + str(self.y))
+        print ("Predicted Output: \n" + str(self.feedforward()))
+        print ("Mean Squared Error: " + str(self.calculateError()))
+        print ("Trials Required: " + str(self.trials))
+        print ("\n")
