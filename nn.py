@@ -13,7 +13,7 @@ def compareNetworks(networks):
 
     #graph lines as errors change
     plt.subplot(211)
-    plt.xlabel('trials')
+    plt.xlabel('trial')
     plt.ylabel('mean squared error')
     for nn in networks:
         plt.plot(nn.history, label=nn.activation)
@@ -24,8 +24,8 @@ def compareNetworks(networks):
 
     #bar chart for activation trials required
     plt.subplot(212)
-    plt.ylabel('trials')
-    plt.xlabel('activation functions')
+    plt.ylabel('trials required')
+    plt.xlabel('activation function')
     plt.bar(np.arange(len(networks)), trials, align='center', color=plotColors)
     plt.xticks(np.arange(len(networks)), activations)
 
