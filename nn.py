@@ -59,6 +59,11 @@ def main():
     NN3.learn()
     networks.append(NN3)
 
+    #softplus network
+    NN4 = NeuralNetwork(x,y, activation='softplus', learningRate=0.3)
+    NN4.learn()
+    networks.append(NN4)
+
     compareNetworks(networks)
 
 main()
