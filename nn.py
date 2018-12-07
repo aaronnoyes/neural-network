@@ -1,6 +1,7 @@
 #program for comparing neural networks
 
 import numpy as np
+import sys
 import pdb
 import matplotlib.pyplot as plt
 from NeuralNetwork import NeuralNetwork
@@ -20,7 +21,7 @@ def compareNetworks(networks):
         trials.append(nn.trials)
         activations.append(nn.activation)
         nn.summary()
-    plt.legend()
+    plt.legend(loc="upper right")
 
     #bar chart for activation trials required
     plt.subplot(212)
@@ -44,17 +45,17 @@ def main():
     networks = [] #hold all neural networks for comparison
 
     #sigmoid network
-    NN = NeuralNetwork(x,y, activation='sigmoid', learningRate=1)
+    NN = NeuralNetwork(x,y, activation='sigmoid', learningRate=0.3)
     NN.learn()
     networks.append(NN)
 
     #relu network
-    NN2 = NeuralNetwork(x,y, activation='relu', learningRate=0.1)
+    NN2 = NeuralNetwork(x,y, activation='relu', learningRate=0.3)
     NN2.learn()
     networks.append(NN2)
 
     #relu network
-    NN3 = NeuralNetwork(x,y, activation='tanh', learningRate=0.1)
+    NN3 = NeuralNetwork(x,y, activation='tanh', learningRate=0.3)
     NN3.learn()
     networks.append(NN3)
 

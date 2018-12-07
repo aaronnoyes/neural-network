@@ -3,9 +3,10 @@
 #https://towardsdatascience.com/how-to-build-your-own-neural-network-from-scratch-in-python-68998a08e4f6
 
 import numpy as np
+import pdb
 
 class NeuralNetwork:
-    def __init__(self, x, y, activation='sigmoid', errorFunction='mse', learningRate=0.01, goalError=0.002, trialLimit=5000):
+    def __init__(self, x, y, activation='sigmoid', errorFunction='mse', learningRate=0.01, goalError=0.002, trialLimit=10000):
         self.input      = x
         self.weights1   = np.random.rand(self.input.shape[1],4)
         self.weights2   = np.random.rand(4,1)
@@ -44,6 +45,7 @@ class NeuralNetwork:
 
     def feedforward(self):
         if (self.activation == 'sigmoid'):
+            pdb.set_trace()
             self.layer1 = self.sigmoid(np.dot(self.input, self.weights1))
             self.output = self.sigmoid(np.dot(self.layer1, self.weights2))
 
@@ -60,6 +62,7 @@ class NeuralNetwork:
     def backprop(self):
         # application of the chain rule to find derivative of the loss function with respect to weights2 and weights1
         if (self.activation == 'sigmoid'):
+            pdb.set_trace()
             d_weights2 = np.dot(self.layer1.T, (2*(self.y - self.output) * self.d_sigmoid(self.output)))
             d_weights1 = np.dot(self.input.T,  (np.dot(2*(self.y - self.output) * self.d_sigmoid(self.output), self.weights2.T) * self.d_sigmoid(self.layer1)))
 
@@ -82,10 +85,10 @@ class NeuralNetwork:
         self.backprop()
 
     def learn(self):
-        while self.calculateError() > self.goalError:
+        while self.calculateError() >= self.goalError:
             self.trials += 1
             self.train()
-            if self.trials > self.trialLimit:
+            if self.trials >= self.trialLimit:
                 print(self.activation + " timed out after " + str(self.trialLimit) + " trials\n")
                 break
 
