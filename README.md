@@ -1,10 +1,10 @@
-#A Simple Neural Network comparison in Python
+# A Simple Neural Network comparison in Python
 
-##Credit
+## Credit
 The guts of the neural network class are from [This blog post from jamesloyys on towardsdatascience.](https://towardsdatascience.com/how-to-build-your-own-neural-network-from-scratch-in-python-68998a08e4f6)
 Their original code can be found [here](https://gist.github.com/jamesloyys/ff7a7bb1540384f709856f9cdcdee70d#file-neural_network_backprop-py)
 
-##What is this?
+## What is this?
 I refactored and completed the NeuralNetwork class to have some variation in activation function, as well as adding learning rate.
 
 
